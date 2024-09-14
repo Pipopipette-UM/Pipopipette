@@ -38,6 +38,28 @@ score = {"BLUE": 0, "RED": 0}
 font = pygame.font.SysFont(None, 36)
 
 
+def reset_game():
+    global horizontal_lines, vertical_lines, boxes, turn, score
+    horizontal_lines = [[None] * (GRID_SIZE - 1) for _ in range(GRID_SIZE)]
+    vertical_lines = [[None] * GRID_SIZE for _ in range(GRID_SIZE - 1)]
+    boxes = [[None] * (GRID_SIZE - 1) for _ in range(GRID_SIZE - 1)]
+    turn = "BLUE"
+    score = {"BLUE": 0, "RED": 0}
+
+
+def check_victory():
+    total_boxes = (GRID_SIZE - 1) ** 2
+    filled_boxes = sum(1 for row in boxes for box in row if box) # Python pythonesque pour compter les boîtes remplies
+    if filled_boxes == total_boxes:  # Si toutes les boîtes sont remplies
+        if score["BLUE"] > score["RED"]:
+            print("Blue wins!")
+        elif score["RED"] > score["BLUE"]:
+            print("Red wins!")
+        else:
+            print("It's a tie!")
+        reset_game()  # On réinitialise le jeu après avoir affiché le gagnant
+
+
 def draw_grid():
     # On remplit l'arrière-plan
     screen.fill(BACKGROUND_COLOR)
@@ -154,7 +176,7 @@ def handle_click(pos):
     # Changement de joueur si aucune boîte n'a été complétée
     if clicked and check_box_completion() == 0:
         turn = "RED" if turn == "BLUE" else "BLUE"
-
+    check_victory()
 
 # Boucle de jeu principale
 running = True
