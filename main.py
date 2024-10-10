@@ -1,6 +1,7 @@
 import pygame
 import sys
-
+from time import sleep
+from api import API
 # On initialise pygame
 pygame.init()
 
@@ -38,6 +39,30 @@ class Game:
         self.boxes = [[None] * (GRID_SIZE - 1) for _ in range(GRID_SIZE - 1)] # None = boîte non complétée, "BLUE" ou "RED" = boîte complétée
         self.turn = "BLUE"  # Le joueur bleu commence
         self.score = {"BLUE": 0, "RED": 0}
+
+    def get_environement(self):
+        return {
+            "horizontal_lines" : self.horizontal_lines,
+            "vertical_lines" : self.vertical_lines,
+            "boxes" : self.boxes,
+            "turn" : self.turn,
+            "score" : self.score
+        }
+
+    def make_move(self,move):
+        if move[0] == "horizontal":
+            row = move[1]
+            col = move[2]
+            self.horizontal_lines[row][col] = self.turn
+
+        elif move[0] == "vertical":
+            row = move[1]
+            col = move[2]
+            self.vertical_lines[row][col] = self.turn
+
+        if  self.check_box_completion() == 0:
+            self.turn = "RED" if self.turn == "BLUE" else "BLUE"
+        self.check_victory()
 
 
     def draw_grid(self):
@@ -175,7 +200,7 @@ class Game:
 
 def main() :
     game = Game()
-
+    api = API(game)
     # Boucle de jeu principale
     running = True
     while running:
@@ -183,11 +208,15 @@ def main() :
         game.draw_score()
         pygame.display.flip()
 
+        sleep(0.5)
+        api.play()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                game.handle_click(pygame.mouse.get_pos())
+                #game.handle_click(pygame.mouse.get_pos())
+                api.play()
 
     pygame.quit()
     sys.exit()
