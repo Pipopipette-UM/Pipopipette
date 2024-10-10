@@ -62,7 +62,7 @@ class Game:
             col = move[2]
             self.vertical_lines[row][col] = self.turn
 
-        if  self.check_box_completion() == 0:
+        if  self.check_box_completion(move[0], row, col) == 0:
             self.turn = "RED" if self.turn == "BLUE" else "BLUE"
         self.check_victory()
 
@@ -111,18 +111,28 @@ class Game:
             for col in range(GRID_SIZE):
                 pygame.draw.circle(screen, DOTS_COLOR, (MARGIN + col * SPACING, MARGIN + row * SPACING + MARGIN_TOP), DOT_RADIUS)
 
-
-    def check_box_completion(self):
+    def check_box_completion(self,line_direction , row, col):
         # On vérifie si une boîte a été complétée après un mouvement
+
         completed_boxes = 0
-        for row in range(GRID_SIZE - 1):
-            for col in range(GRID_SIZE - 1):
-                if self.boxes[row][col] is None:
-                    if (self.horizontal_lines[row][col] and self.horizontal_lines[row + 1][col] and
-                            self.vertical_lines[row][col] and self.vertical_lines[row][col + 1]):
-                        self.boxes[row][col] = self.turn
-                        self.score[self.turn] += 1
-                        completed_boxes += 1
+        if line_direction == "horizontal":
+            if row >0 and col < GRID_SIZE-1 and self.horizontal_lines[row][col] and self.horizontal_lines[row-1][col] and self.vertical_lines[row-1][col] and self.vertical_lines[row-1][col+1]:
+                self.boxes[row-1][col] = self.turn
+                self.score[self.turn] += 1
+                completed_boxes += 1
+            if row < GRID_SIZE-1 and col < GRID_SIZE-1 and self.horizontal_lines[row][col] and self.horizontal_lines[row+1][col] and self.vertical_lines[row][col] and self.vertical_lines[row][col+1]:
+                self.boxes[row][col] = self.turn
+                self.score[self.turn] += 1
+                completed_boxes += 1
+        elif line_direction == "vertical":
+            if row < GRID_SIZE-1 and col > 0 and self.vertical_lines[row][col] and self.vertical_lines[row][col-1] and self.horizontal_lines[row][col-1] and self.horizontal_lines[row+1][col-1]:
+                self.boxes[row][col-1] = self.turn
+                self.score[self.turn] += 1
+                completed_boxes += 1
+            if row < GRID_SIZE-1 and col < GRID_SIZE-1 and self.vertical_lines[row][col] and self.vertical_lines[row][col+1] and self.horizontal_lines[row][col] and self.horizontal_lines[row+1][col]:
+                self.boxes[row][col] = self.turn
+                self.score[self.turn] += 1
+                completed_boxes += 1
         return completed_boxes
 
 
@@ -137,7 +147,8 @@ class Game:
     def handle_click(self, pos):
         x, y = pos
         clicked = False
-
+        last_row, last_row = 0, 0
+        line_direction = ""
         # Traitement des lignes horizontales
         row = 0
         while row < GRID_SIZE and not clicked:
@@ -149,8 +160,11 @@ class Game:
                 line_y2 = line_y1
 
                 if line_x1 - CLICK_RADIUS < x < line_x2 + CLICK_RADIUS and line_y1 - CLICK_RADIUS < y < line_y2 + CLICK_RADIUS:
-                    if not self.horizontal_lines[row][col]: # Si la ligne n'est pas déjà tracée
-                        self.horizontal_lines[row][col] = self.turn # On trace la ligne pour le joueur actuel
+                    if not self.horizontal_lines[row][col]:  # Si la ligne n'est pas déjà tracée
+                        self.horizontal_lines[row][col] = self.turn  # On trace la ligne pour le joueur actuel
+                        last_row = row
+                        last_col = col
+                        line_direction = "horizontal"
                         clicked = True
                         break # On sort de la boucle des colonnes pour éviter de dessiner plusieurs lignes
                 col += 1
@@ -168,15 +182,18 @@ class Game:
                     line_y2 = line_y1 + SPACING
 
                     if line_x1 - CLICK_RADIUS < x < line_x2 + CLICK_RADIUS and line_y1 - CLICK_RADIUS < y < line_y2 + CLICK_RADIUS:
-                        if not self.vertical_lines[row][col]: # Si la ligne n'est pas déjà tracée
-                            self.vertical_lines[row][col] = self.turn # On trace la ligne pour le joueur actuel
+                        if not self.vertical_lines[row][col]:  # Si la ligne n'est pas déjà tracée
+                            self.vertical_lines[row][col] = self.turn  # On trace la ligne pour le joueur actuel
+                            last_row = row
+                            last_col = col
+                            line_direction = "vertical"
                             clicked = True
                             break # On sort de la boucle des colonnes pour éviter de dessiner plusieurs lignes
                     col += 1
                 row += 1
 
         # On change de joueur si aucune boîte n'a été complétée
-        if clicked and self.check_box_completion() == 0:
+        if clicked and self.check_box_completion(line_direction, last_row, last_col) == 0:
             self.turn = "RED" if self.turn == "BLUE" else "BLUE"
         self.check_victory()
 

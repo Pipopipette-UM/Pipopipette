@@ -40,7 +40,7 @@ class Algo:
             
 
     @staticmethod
-    def check_box_completion(environement):
+    def check_box_completion(line_direction, row, col, environement):
         vertical_lines = environement["vertical_lines"]
         horizontal_lines = environement["horizontal_lines"]
         boxes = environement["boxes"]
@@ -50,13 +50,30 @@ class Algo:
         GRID_SIZE = environement["GRID_SIZE"]
         # On vérifie si une boîte a été complétée après un mouvement
         completed_boxes = 0
-        for row in range(GRID_SIZE - 1):
-            for col in range(GRID_SIZE - 1):
-                if boxes[row][col] is None:
-                    if (horizontal_lines[row][col] and horizontal_lines[row + 1][col] and
-                            vertical_lines[row][col] and vertical_lines[row][col + 1]):
-                        new_score[turn] += 1
-                        completed_boxes += 1
+        if line_direction == "horizontal":
+            if row > 0 and col < GRID_SIZE - 1 and horizontal_lines[row][col] and horizontal_lines[row - 1][
+                col] and vertical_lines[row - 1][col] and vertical_lines[row - 1][col + 1]:
+                boxes[row - 1][col] = turn
+                score[turn] += 1
+                completed_boxes += 1
+            if row < GRID_SIZE - 1 and col < GRID_SIZE - 1 and horizontal_lines[row][col] and \
+                    horizontal_lines[row + 1][col] and vertical_lines[row][col] and vertical_lines[row][
+                col + 1]:
+                boxes[row][col] = turn
+                score[turn] += 1
+                completed_boxes += 1
+        elif line_direction == "vertical":
+            if row < GRID_SIZE - 1 and col > 0 and vertical_lines[row][col] and vertical_lines[row][
+                col - 1] and horizontal_lines[row][col - 1] and horizontal_lines[row + 1][col - 1]:
+                boxes[row][col - 1] = turn
+                score[turn] += 1
+                completed_boxes += 1
+            if row < GRID_SIZE - 1 and col < GRID_SIZE - 1 and vertical_lines[row][col] and \
+                    vertical_lines[row][col + 1] and horizontal_lines[row][col] and \
+                    horizontal_lines[row + 1][col]:
+                boxes[row][col] = turn
+                score[turn] += 1
+                completed_boxes += 1
         #if new_score[turn] != 0 :print("new score possible : ",new_score[turn])
         return (completed_boxes,new_score[turn])
 
@@ -79,7 +96,7 @@ class Algo:
                     vertical_lines_copy = copy.deepcopy(vertical_lines)
                     vertical_lines_copy[i][j] = turn
                     environement["vertical_lines"] = vertical_lines_copy
-                    boxes, new_score = Algo.check_box_completion(environement)
+                    boxes, new_score = Algo.check_box_completion("vertical", i, j, environement)
                     #print(boxes,new_score)
                     environement["vertical_lines"] = vertical_lines
                     if(new_score > score[turn]):
@@ -101,7 +118,7 @@ class Algo:
                     horizontal_lines_copy = copy.deepcopy(horizontal_lines)
                     horizontal_lines_copy[i][j] = turn
                     environement["horizontal_lines"] = horizontal_lines_copy
-                    boxes, new_score = Algo.check_box_completion(environement)
+                    boxes, new_score = Algo.check_box_completion("horizontal", i, j, environement)
                     environement["horizontal_lines"] = horizontal_lines
 
                     if(new_score > score[turn]):
