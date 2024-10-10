@@ -9,12 +9,13 @@ BACKGROUND_COLOR = (52, 50, 62)
 DOTS_COLOR = (250, 251, 248)
 RED_LINE_COLOR = (245, 106, 121)
 BLUE_LINE_COLOR = (127, 207, 248)
+DEFAULT_LINE_COLOR = (56, 54, 66)
 RED_SQUARE_COLOR = (211, 22, 38)
 BLUE_SQUARE_COLOR = (0, 121, 200)
 
 # Paramètres du jeu
 WIDTH, HEIGHT = 600, 640 # en px
-GRID_SIZE = 6  # Nombre de points par rangée/colonne
+GRID_SIZE = 5  # Nombre de points par rangée/colonne
 DOT_RADIUS = 15
 MARGIN = 50 # Marge autour de la grille
 MARGIN_TOP = 40
@@ -59,26 +60,24 @@ class Game:
         # On dessine les lignes horizontales
         for row in range(GRID_SIZE):  # Pour chaque ligne
             for col in range(GRID_SIZE - 1):  # Pour chaque colonne
-                if self.horizontal_lines[row][col]:
-                    pygame.draw.line(
-                        screen,
-                        BLUE_LINE_COLOR if self.horizontal_lines[row][col] == "BLUE" else RED_LINE_COLOR,
-                        (MARGIN + col * SPACING, MARGIN + row * SPACING + MARGIN_TOP), # Start x, y
-                        (MARGIN + (col + 1) * SPACING, MARGIN + row * SPACING + MARGIN_TOP), # End x, y
-                        LINE_WIDTH
-                    )
+                pygame.draw.line(
+                    screen,
+                    DEFAULT_LINE_COLOR if not self.horizontal_lines[row][col] else (BLUE_LINE_COLOR if self.horizontal_lines[row][col] == "BLUE" else RED_LINE_COLOR),
+                    (MARGIN + col * SPACING, MARGIN + row * SPACING + MARGIN_TOP), # Start x, y
+                    (MARGIN + (col + 1) * SPACING, MARGIN + row * SPACING + MARGIN_TOP), # End x, y
+                    LINE_WIDTH
+                )
 
         # On dessine les lignes verticales
         for row in range(GRID_SIZE - 1):  # Pour chaque ligne
             for col in range(GRID_SIZE):  # Pour chaque colonne
-                if self.vertical_lines[row][col]:
-                    pygame.draw.line(
-                        screen,
-                        BLUE_LINE_COLOR if self.vertical_lines[row][col] == "BLUE" else RED_LINE_COLOR,
-                        (MARGIN + col * SPACING, MARGIN + row * SPACING + MARGIN_TOP),
-                        (MARGIN + col * SPACING, MARGIN + (row + 1) * SPACING + MARGIN_TOP),
-                        LINE_WIDTH
-                    )
+                pygame.draw.line(
+                    screen,
+                    DEFAULT_LINE_COLOR if not self.vertical_lines[row][col] else (BLUE_LINE_COLOR if self.vertical_lines[row][col] == "BLUE" else RED_LINE_COLOR),
+                    (MARGIN + col * SPACING, MARGIN + row * SPACING + MARGIN_TOP),
+                    (MARGIN + col * SPACING, MARGIN + (row + 1) * SPACING + MARGIN_TOP),
+                    LINE_WIDTH
+                )
 
         # On dessine les points
         for row in range(GRID_SIZE):
