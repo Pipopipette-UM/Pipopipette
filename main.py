@@ -39,6 +39,7 @@ class Game:
         self.boxes = [[None] * (GRID_SIZE - 1) for _ in range(GRID_SIZE - 1)] # None = boîte non complétée, "BLUE" ou "RED" = boîte complétée
         self.turn = "BLUE"  # Le joueur bleu commence
         self.score = {"BLUE": 0, "RED": 0}
+        self.wins = {"BLUE":0, "RED":0}
 
     def get_environement(self):
         return {
@@ -46,7 +47,8 @@ class Game:
             "vertical_lines" : self.vertical_lines,
             "boxes" : self.boxes,
             "turn" : self.turn,
-            "score" : self.score
+            "score" : self.score,
+            "GRID_SIZE" : GRID_SIZE
         }
 
     def make_move(self,move):
@@ -208,7 +210,7 @@ def main() :
         game.draw_score()
         pygame.display.flip()
 
-        sleep(0.5)
+        #sleep(0.5)
         api.play()
 
         for event in pygame.event.get():
@@ -217,6 +219,7 @@ def main() :
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 #game.handle_click(pygame.mouse.get_pos())
                 api.play()
+                print("cbon")
 
     pygame.quit()
     sys.exit()
