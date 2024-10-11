@@ -65,24 +65,27 @@ class Algo:
         vertical_lines = environement["vertical_lines"]
         horizontal_lines = environement["horizontal_lines"]
         turn = environement["turn"]
-        score = environement["score"]
+        score = environement["score"][turn]
 
         vertical_move = Algo.random(environement) #on fait une action aléatoire si on ne trouve pas d'action qui rapporte des points
         better_vertical = False #True si on a trouvé une meilleure action que l'aléatoire
+        better_move_score_vertical = score
 
         for i in range( len(vertical_lines)  ):
-            if better_vertical : break
+            #print(better_move_score_vertical)
+            if better_move_score_vertical > score : break
             for j in range( len(vertical_lines[0])   ):
                 
                 if vertical_lines[i][j] == None:
 
-                    vertical_lines_copy = copy.deepcopy(vertical_lines)
-                    vertical_lines_copy[i][j] = turn
+                    vertical_lines_copy = copy.deepcopy(vertical_lines) #on cree une copie du plateau
+                    vertical_lines_copy[i][j] = turn #on fait une action sur le tableau
                     environement["vertical_lines"] = vertical_lines_copy
-                    boxes, new_score = Algo.check_box_completion(environement)
+                    boxes, new_score = Algo.check_box_completion(environement) #on test si cette action permet d'améliorer notre score
                     #print(boxes,new_score)
                     environement["vertical_lines"] = vertical_lines
-                    if(new_score > score[turn]):
+                    if(new_score > better_move_score_vertical): #si oui on la garde
+                        better_move_score_vertical = new_score
                         vertical_move = ("vertical", i,j)
                         better_vertical = True
                         #print("found move: ", vertical_move)
@@ -91,9 +94,10 @@ class Algo:
 
         horizontal_move = Algo.random(environement)
         better_horizontal = False
+        better_move_score_horizontal = score
 
         for i in range( len(horizontal_lines)  ):
-            if better_horizontal : break
+            if better_move_score_horizontal > score : break
             for j in range( len(horizontal_lines[0])   ):
                 
                 if horizontal_lines[i][j] == None:
@@ -104,7 +108,8 @@ class Algo:
                     boxes, new_score = Algo.check_box_completion(environement)
                     environement["horizontal_lines"] = horizontal_lines
 
-                    if(new_score > score[turn]):
+                    if(new_score > better_move_score_horizontal):
+                        better_move_score_horizontal = new_score
                         horizontal_move = ("horizontal", i,j)
                         better_horizontal = True
                         #print("found move: ", horizontal_move)
@@ -112,11 +117,11 @@ class Algo:
                         
 
 
-        if (better_horizontal and better_vertical):
+        if (better_move_score_horizontal == better_move_score_vertical ):
             return random.choice([horizontal_move,vertical_move])
-        elif better_horizontal:
+        elif better_move_score_horizontal > score:
             return horizontal_move
-        elif better_vertical:
+        elif better_move_score_vertical > score:
             return vertical_move
 
         else:
