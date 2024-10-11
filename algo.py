@@ -53,27 +53,19 @@ class Algo:
         if line_direction == "horizontal":
             if row > 0 and col < GRID_SIZE - 1 and horizontal_lines[row][col] and horizontal_lines[row - 1][
                 col] and vertical_lines[row - 1][col] and vertical_lines[row - 1][col + 1]:
-                boxes[row - 1][col] = turn
-                score[turn] += 1
-                completed_boxes += 1
+                new_score[turn] += 1
             if row < GRID_SIZE - 1 and col < GRID_SIZE - 1 and horizontal_lines[row][col] and \
                     horizontal_lines[row + 1][col] and vertical_lines[row][col] and vertical_lines[row][
                 col + 1]:
-                boxes[row][col] = turn
-                score[turn] += 1
-                completed_boxes += 1
+                new_score[turn] += 1
         elif line_direction == "vertical":
             if row < GRID_SIZE - 1 and col > 0 and vertical_lines[row][col] and vertical_lines[row][
                 col - 1] and horizontal_lines[row][col - 1] and horizontal_lines[row + 1][col - 1]:
-                boxes[row][col - 1] = turn
-                score[turn] += 1
-                completed_boxes += 1
+                new_score[turn] += 1
             if row < GRID_SIZE - 1 and col < GRID_SIZE - 1 and vertical_lines[row][col] and \
                     vertical_lines[row][col + 1] and horizontal_lines[row][col] and \
                     horizontal_lines[row + 1][col]:
-                boxes[row][col] = turn
-                score[turn] += 1
-                completed_boxes += 1
+                new_score[turn] += 1
         #if new_score[turn] != 0 :print("new score possible : ",new_score[turn])
         return (completed_boxes,new_score[turn])
 

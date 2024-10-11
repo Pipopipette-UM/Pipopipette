@@ -227,7 +227,7 @@ def main() :
         game.draw_score()
         pygame.display.flip()
 
-        #sleep(0.5)
+        sleep(0.2)
         api.play()
 
         for event in pygame.event.get():
@@ -236,7 +236,6 @@ def main() :
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 #game.handle_click(pygame.mouse.get_pos())
                 api.play()
-                print("cbon")
 
     pygame.quit()
     sys.exit()
