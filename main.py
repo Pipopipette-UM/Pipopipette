@@ -15,13 +15,13 @@ RED_SQUARE_COLOR = (211, 22, 38)
 BLUE_SQUARE_COLOR = (0, 121, 200)
 
 # Paramètres du jeu
-WIDTH, HEIGHT = 600, 640 # en px
-GRID_SIZE = 5  # Nombre de points par rangée/colonne
-DOT_RADIUS = 15
-MARGIN = 50 # Marge autour de la grille
-MARGIN_TOP = 40
+WIDTH, HEIGHT = 800, 800 # en px
+GRID_SIZE = 10  # Nombre de points par rangée/colonne
+DOT_RADIUS = 2
+MARGIN = 2 # Marge autour de la grille
+MARGIN_TOP = 2
 CLICK_RADIUS = 14
-LINE_WIDTH = 18
+LINE_WIDTH = 8
 
 SPACING = (WIDTH - 2 * MARGIN) // (GRID_SIZE - 1) # Espacement entre deux points
 
@@ -33,13 +33,14 @@ pygame.display.set_caption("Dots and Boxes")
 font = pygame.font.SysFont(None, 36)
 
 class Game:
+    wins = {"BLUE":0, "RED":0, "TIE":0}
     def __init__(self):
         self.horizontal_lines = [[None] * (GRID_SIZE - 1) for _ in range(GRID_SIZE)] # None = ligne non tracée, "BLUE" ou "RED" = ligne tracée
         self.vertical_lines = [[None] * GRID_SIZE for _ in range(GRID_SIZE - 1)] # None = ligne non tracée, "BLUE" ou "RED" = ligne tracée
         self.boxes = [[None] * (GRID_SIZE - 1) for _ in range(GRID_SIZE - 1)] # None = boîte non complétée, "BLUE" ou "RED" = boîte complétée
         self.turn = "BLUE"  # Le joueur bleu commence
         self.score = {"BLUE": 0, "RED": 0}
-        self.wins = {"BLUE":0, "RED":0}
+        
 
     def get_environement(self):
         return {
@@ -205,11 +206,16 @@ class Game:
         if filled_boxes == total_boxes: # Si toutes les boîtes sont remplies
             if self.score["BLUE"] > self.score["RED"]:
                 print("Le joueur BLEU a gagné !")
+                self.wins["BLUE"]+= 1
             elif self.score["RED"] > self.score["BLUE"]:
                 print("Le joueur ROUGE a gagné !")
+                self.wins["RED"] += 1
             else:
                 print("Match nul !")
+                self.wins["TIE"] += 1
             self.reset_game()  # On réinitialise le jeu après avoir affiché le gagnant
+
+            print("scores : " + str(self.wins))
 
 
     def reset_game(self):
@@ -227,15 +233,19 @@ def main() :
         game.draw_score()
         pygame.display.flip()
 
-        sleep(0.2)
+        sleep(0.05)
         api.play()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                #game.handle_click(pygame.mouse.get_pos())
-                api.play()
+                game.handle_click(pygame.mouse.get_pos())
+                #api.play()
+
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    api.play()
 
     pygame.quit()
     sys.exit()

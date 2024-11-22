@@ -4,8 +4,8 @@ from agent import Agent
 class API:
     def __init__(self, game):
         self.game = game
-        self.J1 = Agent()
-        self.J2 = Agent()
+        self.J1 = Agent("random")
+        self.J2 = Agent("greedy")
 
 
     def play(self):
